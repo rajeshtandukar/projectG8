@@ -1,1 +1,1 @@
-this is project G8
+This is tutorial class on how to use GIT.
