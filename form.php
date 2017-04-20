@@ -8,11 +8,20 @@ if(!isset($_SESSION['userlogin'])){
 ?>
 
 <?php include('header.php');?>
+<style type="text/css">
+	.input_error{
+		border: 1px solid red;
+	}
+</style>
 <h2>New User</h2>
 <hr>
-	<form name="userForm" action="process.php" method="post">
+
+	<div id="error_div" class="alert alert-danger" style="display: none;">
+
+	</div>
+	<form name="userForm"  action="process.php" method="post" enctype="multipart/form-data" onsubmit=" return validation()">
 		<div class="form-group">
-			<label for="exampleInputEmail1">Name</label>
+			<label for="exampleInputEmail1">Name <span style="color:red;">*</span></label>
 			<input type="text" class="form-control" id="name" name="name" placeholder="Name">
 		</div>
 
@@ -22,13 +31,19 @@ if(!isset($_SESSION['userlogin'])){
 		</div>
 
 		<div class="form-group">
-			<label for="exampleInputEmail1">Username</label>
+			<label for="exampleInputEmail1">Username<span style="color:red;">*</span></label>
 			<input type="text" class="form-control" id="username" name="username" placeholder="Username">
 		</div>
 
 		<div class="form-group">
-			<label for="exampleInputEmail1">Password</label>
+			<label for="exampleInputEmail1">Password<span style="color:red;">*</span></label>
 			<input type="password" class="form-control" id="password" name="password" placeholder="Password">
+		</div>
+
+
+		<div class="form-group">
+			<label for="exampleInputEmail1">Image</label>
+			<input type="file" id="image" name="image" >
 		</div>
 		
 		

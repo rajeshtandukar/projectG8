@@ -1,34 +1,25 @@
 <?php
+//echo md5('password');
+//exit;
 include 'session.php';
-include 'db.php';
+include 'usermodel.php';
+include 'pagination.php';
 
-//print_r($_SESSION['user']);
 
 if(!isset($_SESSION['userlogin'])){
 	header('location: login.php?err=1');
 }
 
 
-$limit = 5; // per page;
-$page = isset($_GET['page'])?$_GET['page']:1;
-if($page == 1){
-	$limistart=0;	
-}else{
-	$limistart= ($page-1) * $limit;
-}
+$userModel = new Usermodel();
+$total = $userModel->getTotalRecords();
+//var_dump($total);
 
-$sql = "SELECT count(*) AS total FROM tbl_users ";
-$result = mysqli_query($conn, $sql);
-$record = mysqli_fetch_assoc($result);
-$total = $record['total'];
-$totalpages = ceil($total/$limit);
+$pagination = new Pagination(5);
+$page = isset($_GET['page'])? $_GET['page']:null;
+$pagination->setLimit($total,$page);
 
-
-
-
-
-$sql = "SELECT * FROM tbl_users LIMIT $limistart,$limit";
-$result = mysqli_query($conn,$sql);
+$rows = $userModel->getUserList($pagination->limistart,$pagination->limit);
 
 include 'header.php';
 
@@ -56,6 +47,7 @@ include 'header.php';
 			<thead>
 				<tr>
 					<th>S.N</th>
+					<th>Avatar</th>
 					<th>Name</th>
 					<th>Address</th>
 					<th>Action</th>
@@ -64,9 +56,15 @@ include 'header.php';
 			<tbody>
 				<?php 
 					$key=1;
-				 while($row = mysqli_fetch_assoc($result) ){ ?>
+				 foreach($rows as $row ){ ?>
 				<tr>
 					<td><?php echo $key++;?></td>
+					<td>
+						<?php if($row['image']){?>
+						<img src="uploads/<?php echo $row['image'];?>" height="50" >	
+						<?php }?>
+
+					</td>
 					<td><?php echo $row['name'];?></td>
 					<td><?php echo $row['address'];?></td>
 					<td><a  href="edit.php?id=<?php echo $row['id'];?>" class="btn btn-success">Edit</a>  <a onclick="return check()" href="delete.php?id=<?php echo $row['id'];?>" class="btn btn-danger">Delete</a></td>
@@ -79,27 +77,9 @@ include 'header.php';
 					<td colspan="4">
 						
 						 <ul class="pagination">
-						 <?php if($page !=1){?>
-						 <li><a href="index.php?page=1">&lt;&lt;</a></li>
-						 <?php }?>
-						 <?php 
-
-						 for($i=1;$i<=$totalpages;$i++) {
-						 	$class = ($page== $i)? 'active':'';	
-						 	?>
-								
-							<li class="<?php echo $class;?>">
-							
-							<?php if($page == $i){	?>
-								<a ><?php echo $i;?></a>
-							<?php }else{?>
-								<a href="index.php?page=<?php echo $i;?>"><?php echo $i;?></a>
-							<?php }?>
-							</li>				 		
-						 <?php }?>
-						 <?php if($page != $totalpages){?>
-						<li><a href="index.php?page=<?php echo $totalpages;?>">&gt;&gt;</a></li>
-						<?php }?>
+						 
+						 <?php $pagination->getPage($total);?>	
+						 
 						</ul>
 					</td>
 				</tr>

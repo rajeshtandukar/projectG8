@@ -7,15 +7,15 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
 
   
   include 'db.php';
-
+  $db = new DB();
   $sql = "SELECT * FROM tbl_users WHERE username='$username' AND password='$password'";
 
-  $result = mysqli_query($conn, $sql);
+  $result = $db->query($sql);
   if($result){
-    $affected_row = mysqli_num_rows($result);
+    $affected_row = $db->getNumRows();
     if($affected_row == 1){
       $_SESSION['userlogin'] = true;
-      $_SESSION['user'] = mysqli_fetch_assoc($result);
+      $_SESSION['user'] = $db->getRow();
       $remember = isset($_POST['keeplogin'])?$_POST['keeplogin']:null;
       if($remember== 1){
         setcookie('remember',$_SESSION['user']['token'],time()+( 86400 * 5));
